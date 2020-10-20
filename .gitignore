@@ -1,0 +1,5 @@
+# IDE artefacts
+.idea/*
+
+# Build artefacts
+docs/_build/*
