@@ -5,7 +5,6 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 install_requires = [
-    "cryptography>=2.3.0",
     "Pebble>=4.5.3",
 ]
 

@@ -1,24 +1,17 @@
 """
-Local Runner
+Runner and Local Runner
 
 Runner responsibilities: keep track of the state of what is to be running.
-Does the deployed runner report doneness back to the controller? Especially for not
-worrying about monitoring of one off jobs.
-
 """
 from abc import abstractmethod
 from collections import defaultdict
 import datetime
-import json
 import logging
 import multiprocessing as mp
-import signal
 import time
 from typing import List
 
-from cryptography.fernet import Fernet
 import pebble
-import requests
 
 from untitled_job_runner.job import Job, JobDone
 
@@ -200,155 +193,3 @@ class LocalJobsRunner(Runner):
     def check_still_running(self):
         """The local jobs runner keeps going until all of the jobs are complete"""
         return self.jobs
-
-
-def PlatformJobsRunner(Runner):
-    def __init__(
-        self,
-        config_path,
-        check_interval=60,
-        min_pool_processes=8,
-        max_tasks_per_job=None,
-    ):
-        """
-        :param check_interval: number of seconds to wait in between checking for new
-        tasks
-        :param max_tasks_per_job: Jobs are limited to having this number of tasks
-        waiting in the pool at once, to reduce the possibility of a single job
-        flooding the pool. Defaults to num_pool_processes.
-        :param min_pool_processes: The minimum size of the process pool to execute 
-        tasks. Defaults to the minimum of the detected number of CPUs or this value.
-
-        """
-
-        logger.debug(f"Initiasing PlatformJobsRunner with config {config_path}")
-
-        with open(config_path, "r") as config_file:
-            runner_config = json.load(config_file)
-
-        self.config = runner_config
-
-        self.data_dir = runner_config["data_dir"]
-        self.controller_url = runner_config["controller_url"]
-        self.auth = ("node", runner_config["node_secret"])
-        self.decryptor = Fernet(runner_config["secret_enc_key"])
-
-        # Check if this node is registered by trying to load the url from the file.
-        # This is a holdover from the original job/node design, and works like this
-        # to avoid breaking the existing job runner which will be running in parallel.
-        try:
-            with open(os.path.join(self.data_dir, "node_path.txt"), "r") as f:
-                node_path = f.read()
-
-        except Exception:
-            logger.info("Registering this node with the controller")
-
-            # Register this node
-            register_body = {"hostname": socket.getfqdn()}
-            r = requests.post(
-                self.controller_url + "/api/node", data=register_body, auth=self.auth
-            )
-            r.raise_for_status()
-            response_data = r.json()
-
-            # We store the path of the node url only, and later combine it on load with
-            # the URL specified in the actual config. This ensures we can migrate the
-            # controller to a new URL easily.
-            node_path = response_data["node_url"]
-
-            with open(os.path.join(self.data_dir, "node_path.txt"), "w") as f:
-                f.write(node_path)
-
-        # The node_id is used for sending status and logging events.
-        self.node_id = int(node_path.split("/")[-1])
-
-        self.jobs_url = self.controller_url + f"/api/new_style_jobs/"
-        # Exact URL to retrieve the jobs list for this node.
-        self.node_jobs_url = self.jobs_url + "?node_id={self.node_id}"
-
-        # Signal handlers to stop the run method gracefully.
-        signal.signal(signal.SIGINT, self.mark_exit)
-        signal.signal(signal.SIGTERM, self.mark_exit)
-
-        pool_size = max(min_pool_processes, mp.cpu_count())
-        self.pool = pebble.ProcessPool(pool_size, max_tasks=1)
-        self.max_tasks_per_job = max_tasks_per_job or pool_size
-        self.check_interval = check_interval
-
-        self.jobs = {}
-        self.stop = False
-
-    def get_changed_jobs(self):
-        """
-        Compare current state of running jobs to desired state and return jobs to
-        change.
-
-        """
-        r = requests.get(self.node_jobs_url, auth=self.auth, timeout=30)
-        r.raise_for_status()
-
-        controller_jobs = r.json()
-
-        delete_jobs = []
-        create_jobs = []
-
-        # Detect new and update jobs in the controller spec
-        for job_name, job_summary in controller_jobs.items():
-
-            if job_name in self.jobs:
-                # The job has changed, so delete and recreate it
-                if (
-                    job_summary["version_id"]
-                    != self.jobs[job_name]["job"]["version_id"]
-                ):
-                    delete_jobs.append(job_name)
-                    create_jobs.append(job_name)
-            else:
-                create_jobs.append(job_name)
-
-        # Detect jobs that are no longer present on the controller
-        for job_name in self.jobs:
-
-            if job_name not in controller_jobs:
-                delete_jobs.append(job_name)
-
-        return delete_jobs, create_jobs
-
-    def fetch_job(self, job_name):
-        """Return a fully initialised job object, corresponding to the given name."""
-
-        r = requests.get(self.jobs_url + job_name, auth=self.auth, timeout=30)
-        r.raise_for_status()
-
-        # TODO: validation of parameters
-        config = r.json()
-
-        parameters = config["parameters"]
-
-        if config["secrets"] is not None:
-            secrets = json.loads(
-                self.decryptor.decrypt(config["job_secrets"].encode("ascii"))
-            )
-        else:
-            secrets = {}
-
-        # Construct the job config from each of the components. The precedence order is:
-        # secrets overrides job parameters overrides node config
-        job_config = {}
-        job_config.update(self.config)
-        job_config.update(parameters)
-        job_config.update(secrets)
-
-        # TODO: Need a mapping from job_types to classes.
-        job = job_type_mapping[job_config["job_type"]](**job_config)
-
-        return job
-
-    def check_still_running(self):
-        """The platform jobs runner keeps going until a signal is recieved."""
-        return not self.stop
-
-    def mark_exit(self, handler, frame):
-        """Exit the loop on sigterm/sigint"""
-        logger.info("Setting the runner to stop.")
-        self.stop = False
