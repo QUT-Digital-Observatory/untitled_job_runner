@@ -1,8 +1,13 @@
 import setuptools
 
-description = "Untitled job runner"
+description = "Untitled Job Runner"
 with open("README.md", "r") as fh:
     long_description = fh.read()
+
+install_requires = [
+    "cryptography>=2.3.0",
+    "Pebble>=4.5.3",
+]
 
 setuptools.setup(
     name="untitled-job-runner",
@@ -25,4 +30,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License"
     ],
     python_requires='>=3.6',
+    install_requires=install_requires,
 )
