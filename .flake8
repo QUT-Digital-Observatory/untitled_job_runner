@@ -1,0 +1,10 @@
+[flake8]
+max-line-length = 88
+exclude =
+    .git,
+    .pytest_cache
+    # If you don't exclude nox it tries to lint every library in your virtualenv
+    .nox
+    build
+    dist
+    docs/_build

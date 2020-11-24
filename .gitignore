@@ -3,3 +3,7 @@
 
 # Build artefacts
 docs/_build/*
+
+# Test artefacts
+.nox/*
+.pytest_cache/*
