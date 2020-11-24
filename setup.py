@@ -8,6 +8,12 @@ install_requires = [
     "Pebble>=4.5.3",
 ]
 
+extras_require = {
+    "development": [
+        "nox"
+    ]
+}
+
 setuptools.setup(
     name="untitled-job-runner",
     author="QUT Digital Observatory",
@@ -30,4 +36,5 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=install_requires,
+    extras_require=extras_require
 )
