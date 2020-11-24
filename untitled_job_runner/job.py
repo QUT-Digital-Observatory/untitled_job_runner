@@ -16,10 +16,6 @@ from typing import Tuple, List, Callable, Optional
 import logging
 
 
-# Logging setup - NOT SUITABLE FOR PRODUCTION (need to use logging config file as in
-# original platform code), this will output to a temporary log file which will be
-# overwritten each time the file is run. Assumes this file is the entrypoint.
-logging.basicConfig(filename="testing.log", filemode="w", level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 

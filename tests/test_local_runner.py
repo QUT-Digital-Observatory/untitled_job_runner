@@ -1,5 +1,6 @@
 import untitled_job_runner as ujr
 import os.path
+import logging
 
 
 def file_write_task(filename):
@@ -125,6 +126,7 @@ def test_multiple_tasks_emitted(tmpdir, caplog):
     """
     Just make sure the runner loop starts, executes a given task, and stops
     """
+    caplog.set_level(logging.DEBUG)
     test_filename = os.path.join(tmpdir, "test_file.txt")
 
     n_files = 10
