@@ -1,10 +1,4 @@
-"""
-
-"""
-
-
-# Todo: make a home for the job files somewhere in the src directory
-from observatory.runner import local_runner
+import untitled_job_runner as ujr
 import os.path
 
 
@@ -13,17 +7,16 @@ def file_write_task(filename):
         file.write("hello")
 
 
-class BasicTestJob(local_runner.Job):
-    job_name = "basic_test_job"
-
+class BasicTestJob(ujr.Job):
     def __init__(self, test_filename):
         self.test_filename = test_filename
+        super().__init__("basic_test_job")
 
     def get_runnable_tasks(self):
         """Return a task that sleeps, then writes to a file"""
         # If the file exists, raise JobDone
         if os.path.exists(self.test_filename):
-            raise local_runner.JobDone
+            raise ujr.JobDone
 
         # Otherwise, create the file
         # (fn, args, kwargs, signature)
@@ -42,7 +35,7 @@ def test_basic_run_and_stop(tmpdir):
     # Initialise job incl config
     job = BasicTestJob(test_filename)
     # Start runner with job
-    runner = local_runner.LocalJobsRunner([job], check_interval=1)
+    runner = ujr.LocalJobsRunner([job], check_interval=1)
     runner.run()
 
     # Check that the file is written, and the runner terminates.
@@ -55,17 +48,16 @@ def test_basic_run_and_stop(tmpdir):
 # TODO: checking of number of tasks per job in the pool
 
 
-class ExceptionTestJob(local_runner.Job):
-    job_name = "exception_test_job"
-
+class ExceptionTestJob(ujr.Job):
     def __init__(self, test_filename):
         self.test_filename = test_filename
+        super().__init__("exception_test_job")
 
     def get_runnable_tasks(self):
         """Return a task that sleeps, then writes to a file"""
         # If the file exists, raise JobDone
         if os.path.exists(self.test_filename):
-            raise local_runner.JobDone
+            raise ujr.JobDone
 
         # Otherwise, create the file
         return [(raises_one_error, (self.test_filename,), {}, self.test_filename)], None
@@ -92,7 +84,7 @@ def test_catches_exception_and_continues(tmpdir, caplog):
     # Initialise job incl config
     job = ExceptionTestJob(test_filename)
     # Start runner with job
-    runner = local_runner.LocalJobsRunner([job], check_interval=1)
+    runner = ujr.LocalJobsRunner([job], check_interval=1)
     runner.run()
 
     # Check that the file is written, and the runner terminates.
@@ -105,12 +97,12 @@ def test_catches_exception_and_continues(tmpdir, caplog):
         assert False
 
 
-class MultiTaskJob(local_runner.Job):
-    job_name = "multi_test_job"
-
+class MultiTaskJob(ujr.Job):
     def __init__(self, test_filename_prefix, n_files):
         self.test_filename_prefix = test_filename_prefix
         self.n_files = n_files
+
+        super().__init__("multi_test_job")
 
     def get_runnable_tasks(self):
         """Return a new file to be created each time it's called."""
@@ -126,7 +118,7 @@ class MultiTaskJob(local_runner.Job):
         if tasks:
             return tasks, None
         else:
-            raise local_runner.JobDone
+            raise ujr.JobDone
 
 
 def test_multiple_tasks_emitted(tmpdir, caplog):
@@ -139,7 +131,7 @@ def test_multiple_tasks_emitted(tmpdir, caplog):
     # Initialise job incl config
     job = MultiTaskJob(test_filename, n_files)
     # Start runner with job
-    runner = local_runner.LocalJobsRunner([job], check_interval=1)
+    runner = ujr.LocalJobsRunner([job], check_interval=1)
     runner.run()
 
     # should see n_files completed.
