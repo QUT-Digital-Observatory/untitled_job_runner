@@ -173,7 +173,7 @@ class LocalJobsRunner(Runner):
         :param max_tasks_per_job: Jobs are limited to having this number of tasks
         waiting in the pool at once, to reduce the possibility of a single job
         flooding the pool. Defaults to the size of the process pool.
-        :param min_pool_processes: The minimum size of the process pool to execute 
+        :param min_pool_processes: The minimum size of the process pool to execute
         tasks. Defaults to the minimum of the detected number of CPUs or this value.
         """
 
