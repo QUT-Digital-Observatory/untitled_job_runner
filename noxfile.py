@@ -24,4 +24,5 @@ def test(session):
 @nox.session
 def build_docs(session):
     session.install("sphinx")
+    session.install(".")
     session.run("sphinx-build", "-b", "html", "docs", "docs/_build")
