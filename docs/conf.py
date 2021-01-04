@@ -20,7 +20,7 @@
 import pkg_resources
 
 project = "untitled job runner"
-copyright = "2020, QUT Digital Observatory"
+copyright = "2021, QUT Digital Observatory"
 author = "QUT Digital Observatory"
 
 # The full version, including alpha/beta/rc tags
