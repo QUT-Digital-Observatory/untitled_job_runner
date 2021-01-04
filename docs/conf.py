@@ -24,7 +24,7 @@ copyright = "2021, QUT Digital Observatory"
 author = "QUT Digital Observatory"
 
 # The full version, including alpha/beta/rc tags
-version = pkg_resources.get_distribution('untitled-job-runner').version
+version = pkg_resources.get_distribution("untitled-job-runner").version
 release = version
 
 
