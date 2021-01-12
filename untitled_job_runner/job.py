@@ -38,11 +38,11 @@ class Job:
     def next_check(self) -> Optional[dt.datetime]:
         """
         The datetime specifying when the job can next be checked for runnable tasks.
-        
+
         If not None, :met:`Job.get_runnable_tasks` will not be called until on or after
-        this datetime. This can be used, for example, to prevent expensive calls to 
+        this datetime. This can be used, for example, to prevent expensive calls to
         external services happening on every cycle.
-    
+
         """
         return None
 
