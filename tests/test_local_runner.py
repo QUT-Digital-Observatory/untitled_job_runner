@@ -21,10 +21,7 @@ class BasicTestJob(ujr.Job):
 
         # Otherwise, create the file
         # (fn, args, kwargs, signature)
-        return (
-            [(file_write_task, (self.test_filename,), dict(), self.test_filename)],
-            None,
-        )
+        return [(file_write_task, (self.test_filename,), dict(), self.test_filename)]
 
 
 # TODO: add timeout (probs with pytest_timeout plugin)
@@ -61,7 +58,7 @@ class ExceptionTestJob(ujr.Job):
             raise ujr.JobDone
 
         # Otherwise, create the file
-        return [(raises_one_error, (self.test_filename,), {}, self.test_filename)], None
+        return [(raises_one_error, (self.test_filename,), {}, self.test_filename)]
 
 
 def raises_one_error(test_filename):
@@ -117,7 +114,7 @@ class MultiTaskJob(ujr.Job):
                 tasks.append((file_write_task, (filename,), {}, filename))
 
         if tasks:
-            return tasks, None
+            return tasks
         else:
             raise ujr.JobDone
 

@@ -12,7 +12,7 @@ the controller.
 
 import datetime as dt
 from abc import abstractmethod
-from typing import Tuple, List, Callable, Optional
+from typing import Tuple, List, Callable, Optional, Hashable
 import logging
 
 
@@ -31,13 +31,25 @@ class JobDone(Exception):
 # Job may need to give specific tasks some indication of high/low priority for
 # the runner
 class Job:
-    def __init__(self, job_name):
+    def __init__(self, job_name: Hashable):
         self.job_name = job_name
+
+    @property
+    def next_check(self) -> Optional[dt.datetime]:
+        """
+        The datetime specifying when the job can next be checked for runnable tasks.
+        
+        If not None, :met:`Job.get_runnable_tasks` will not be called until on or after
+        this datetime. This can be used, for example, to prevent expensive calls to 
+        external services happening on every cycle.
+    
+        """
+        return None
 
     @abstractmethod
     def get_runnable_tasks(
         self,
-    ) -> Tuple[List[Tuple[Callable, Tuple]], Optional[dt.datetime]]:
+    ) -> List[Tuple[Callable, Tuple]]:
         """
         Returns a list of tuples representing the next tasks to be done for this job.
 
