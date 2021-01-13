@@ -69,8 +69,6 @@ The runner is responsible for:
 
 - Consolidating and interpreting configuration to determine what jobs should/should
   not be running
-- Initialising/tearing down jobs (i.e., taking job parameters, node info, and
-  secrets, and merging them via fetch_job_details)
 - Asking each job what task should be running right now - Running those tasks in a
   process pool
 - Keeping track of which tasks are running using the task’s signature for deduplication
