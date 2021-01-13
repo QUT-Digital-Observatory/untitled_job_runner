@@ -55,7 +55,7 @@ class Runner:
             try:
                 job = self.fetch_job(job_name)
 
-                self.jobs[job.job_name] = {"job": job, "next_check": None}
+                self.jobs[job.job_name] = job
 
             except Exception as e:
                 logger.exception(e)
@@ -113,22 +113,20 @@ class Runner:
             remove_jobs = set()
 
             # Asks jobs for new tasks
-            for job_name, job_state in self.jobs.items():
+            for job_name, job in self.jobs.items():
 
                 if (
-                    job_state["next_check"] is None
-                    or datetime.datetime.utcnow() <= job_state["next_check"]
+                    job.next_check is None
+                    or datetime.datetime.utcnow() >= job.next_check
                 ):
 
                     try:
-                        new_tasks, next_check = job_state["job"].get_runnable_tasks()
+                        new_tasks = job.get_runnable_tasks()
 
                     except JobDone:
                         logger.debug(f"Job {job_name} is all done!")
                         self.report_job_done(job_name)
                         remove_jobs.add(job_name)
-
-                    self.jobs[job_name]["next_check"] = next_check
 
                     for task in new_tasks:
                         if len(self.tasks_to_do[job_name]) >= self.max_tasks_per_job:
@@ -177,7 +175,7 @@ class LocalJobsRunner(Runner):
         tasks. Defaults to the minimum of the detected number of CPUs or this value.
         """
 
-        self.jobs = {job.job_name: {"job": job, "next_check": None} for job in jobs}
+        self.jobs = {job.job_name: job for job in jobs}
 
         pool_size = max(min_pool_processes, mp.cpu_count())
 
