@@ -5,6 +5,9 @@
 docs/_build/*
 __pycache__/*
 */__pycache__/*
+build/*
+dist/*
+untitled_job_runner.egg-info/*
 
 # Test artefacts
 .nox/*

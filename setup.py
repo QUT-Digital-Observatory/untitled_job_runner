@@ -1,6 +1,6 @@
 import setuptools
 
-description = "Untitled Job Runner"
+description = "It runs things!"
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
@@ -8,7 +8,7 @@ install_requires = [
     "Pebble>=4.5.3",
 ]
 
-extras_require = {"development": ["nox"]}
+extras_require = {"development": ["nox", "pytest"]}
 
 setuptools.setup(
     name="untitled-job-runner",
@@ -17,7 +17,8 @@ setuptools.setup(
     description=description,
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://gitlab.com/digital-observatory/untitled-job-runner",
+    url="https://github.com/QUT-Digital-Observatory/untitled_job_runner/",
+    license='MIT',
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
     packages=setuptools.find_packages(),
