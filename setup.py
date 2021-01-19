@@ -8,7 +8,7 @@ install_requires = [
     "Pebble>=4.5.3",
 ]
 
-extras_require = {"development": ["nox", "pytest"]}
+extras_require = {"development": ["nox", "pytest", "pre-commit"]}
 
 setuptools.setup(
     name="untitled-job-runner",

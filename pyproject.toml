@@ -11,6 +11,6 @@ exclude = '''
   | _build
   | build
   | dist
-  | docs/build
+  | docs/_build
 )/
 '''

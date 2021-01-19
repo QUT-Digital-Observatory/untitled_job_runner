@@ -9,6 +9,7 @@ Welcome to untitled job runner's documentation!
    :caption: Contents:
 
    runners_jobs_tasks
+   contributing
 
 For an explanation of the concepts of Untitled Job Runner, see :doc:`runners_jobs_tasks`
 
