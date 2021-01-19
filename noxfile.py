@@ -19,3 +19,10 @@ def test(session):
     session.install("pytest")
     session.install(".")
     session.run("pytest")
+
+
+@nox.session
+def build_docs(session):
+    session.install("sphinx")
+    session.install(".")
+    session.run("sphinx-build", "-b", "html", "docs", "docs/_build")

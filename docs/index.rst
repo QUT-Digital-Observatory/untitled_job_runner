@@ -1,15 +1,16 @@
-.. untitled job runner documentation master file, created by
-   sphinx-quickstart on Tue Oct 20 11:28:39 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to untitled job runner's documentation!
 ===============================================
 
+.. include :: what_is_ujr.rst
+
 .. toctree::
+   :hidden:
    :maxdepth: 2
    :caption: Contents:
 
+   runners_jobs_tasks
+
+For an explanation of the concepts of Untitled Job Runner, see :doc:`runners_jobs_tasks`
 
 
 Indices and tables

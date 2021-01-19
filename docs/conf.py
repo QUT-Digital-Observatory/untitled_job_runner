@@ -17,12 +17,15 @@
 
 # -- Project information -----------------------------------------------------
 
+import pkg_resources
+
 project = "untitled job runner"
-copyright = "2020, QUT Digital Observatory"
+copyright = "2021, QUT Digital Observatory"
 author = "QUT Digital Observatory"
 
 # The full version, including alpha/beta/rc tags
-release = "0.0.0"
+version = pkg_resources.get_distribution("untitled-job-runner").version
+release = version
 
 
 # -- General configuration ---------------------------------------------------
@@ -40,6 +43,8 @@ templates_path = ["_templates"]
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
+# Other config
+primary_domain = "py"
 
 # -- Options for HTML output -------------------------------------------------
 
