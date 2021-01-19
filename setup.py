@@ -18,7 +18,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/QUT-Digital-Observatory/untitled_job_runner/",
-    license='MIT',
+    license="MIT",
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
     packages=setuptools.find_packages(),
