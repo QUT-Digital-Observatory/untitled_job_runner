@@ -12,7 +12,7 @@ the controller.
 
 import datetime as dt
 from abc import abstractmethod
-from typing import Tuple, List, Callable, Optional, Hashable
+from typing import List, Tuple, Sequence, Dict, Callable, Optional, Hashable
 import logging
 
 
@@ -53,12 +53,12 @@ class Job:
         """
         Returns a list of tuples representing the next tasks to be done for this job.
 
-        Representation of a task in the return value is a tuple containing: 
+        Representation of a task in the return value is a tuple containing:
 
-        1. The callable for the task 
+        1. The callable for the task
 
         2. A sequence containing the arguments for the callable.
-        
+
         3. A dictionary or similar structure containing the keyword arguments for the
         callable.
 
