@@ -49,22 +49,27 @@ class Job:
     @abstractmethod
     def get_runnable_tasks(
         self,
-    ) -> List[Tuple[Callable, Tuple]]:
+    ) -> List[Tuple[Callable, Sequence, Dict, Optional[Hashable]]]:
         """
         Returns a list of tuples representing the next tasks to be done for this job.
 
-        Representation of a task in the return value is a tuple containing:
-        1. The function for the task
-        2. A flat tuple containing the arguments for the task function, ready to
-           be unpacked.
+        Representation of a task in the return value is a tuple containing: 
 
-        Also returns either None, or a UTC datetime indicating when this function can be
-        called after.
+        1. The callable for the task 
+
+        2. A sequence containing the arguments for the callable.
+        
+        3. A dictionary or similar structure containing the keyword arguments for the
+        callable.
+
+        4. An optional signature for the args and kwargs. The signature is used to
+        uniquely represent the argqs and keyword arguments for a specific task, as a job
+        can generate many tasks with different arguments. If no signature is specified,
+        all tasks for a job with the same callable will be treated as the same, so only
+        one of them will run at a time, regardless of the args and kwargs to that task.
 
         If the job is completely finished and doesn't need to be re-done, it can
         throw JobDone to signal completion.
 
-        Question for future: should we include a signature of the task or other method
-        for more nuanced duplicate-checking?
         """
         pass
