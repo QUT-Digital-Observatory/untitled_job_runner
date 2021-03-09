@@ -37,11 +37,11 @@ class Runner:
     def update_jobs(self):
         """
         Update the jobs that are running.
-        
+
         New jobs are created if needed, jobs that no longer exist are deleted and
         stopped. A job that has changed will be deleted and stopped, then started
         again with the new config.
-    
+
         """
         delete_jobs, create_jobs = [], []
 
