@@ -66,7 +66,7 @@ class Runner:
     def report_job_done(self, job_name):
         pass
 
-    def report_task_done(self, job_name, task_info):
+    def report_task_done(self, job_name, task_info, result):
         pass
 
     @abstractmethod
@@ -85,27 +85,28 @@ class Runner:
                 to_remove = set()
 
                 for task_info, task in tasks.items():
-                    try:
-                        task.result(timeout=0)
-                        # Task has finished
+                    if task.done():
+
                         to_remove.add(task_info)
-                        logger.debug(f"Completed task for {job_name}: {task_info}")
 
-                        # Report task success here back to the controller later?
-                        self.report_task_done(job_name, task_info)
+                        try:
+                            # Make sure to observe the result in case it raised an
+                            # error.
+                            result = task.result()
+                            # Task has finished
+                            logger.debug(f"Completed task for {job_name}: {task_info}")
 
-                    except TimeoutError:
-                        # Task hasn't finished yet
-                        continue
-                    except Exception as e:
-                        # Task has thrown an error
-                        to_remove.add(task_info)
-                        # TODO: add job_name and task details to error message
-                        logger.exception(e)
+                            # Report task success here
+                            self.report_task_done(job_name, task_info, result)
 
-                        self.report_exception(
-                            job_name, task_info, e, "Unexpected error in task"
-                        )
+                        except Exception as e:
+                            # Task has thrown an error
+                            # TODO: add job_name and task details to error message
+                            logger.exception(e)
+
+                            self.report_exception(
+                                job_name, task_info, e, "Unexpected error in task"
+                            )
 
                 for task_info in to_remove:
                     del self.tasks_to_do[job_name][task_info]
